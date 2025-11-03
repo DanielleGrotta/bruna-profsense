@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bruna Profsense — Planejamento & Correção com IA (protótipo)</title>
+  <style>
+    :root{
+      --bg:#0f0f13;
+      --card:#151824;
+      --muted:#1b1f2e;
+      --brand:#8b7bff; /* lilás fofo */
+      --accent:#7ce0cc; /* verde-água suave */
+      --text:#e9ecf1;
+      --sub:#aeb6c8;
+      --warn:#ffcd6b;
+      --danger:#ff7a8a;
+      --ok:#7fe39a;
+      --radius:18px;
+      --shadow:0 10px 30px rgba(0,0,0,.25);
+      --ring:0 0 0 2px rgba(139,123,255,.28),0 0 0 8px rgba(139,123,255,.08);
+      --grid:12px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font:500 15px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; color:var(--text); background: radial-gradient(1200px 600px at 20% -10%, rgba(139,123,255,.16), transparent 60%), radial-gradient(800px 400px at 110% 10%, rgba(124,224,204,.12), transparent 60%), var(--bg);}    
+    .app{max-width:1200px;margin:24px auto;padding:16px}
+
+    header{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:16px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:44px;height:44px;border-radius:12px;background:linear-gradient(140deg,var(--brand),#b199ff 45%, #a0ffe6); box-shadow:var(--shadow); position:relative}
+    .logo:after{content:"🦉"; position:absolute; inset:0; display:grid; place-items:center; font-size:24px; filter:drop-shadow(0 2px 2px rgba(0,0,0,.4))}
+    h1{font-size:20px;margin:0}
+    .sub{color:var(--sub);font-size:12px}
+
+    .actions{display:flex;gap:8px;align-items:center}
+    .btn, button{border:0; background:var(--muted); color:var(--text); padding:10px 14px; border-radius:12px; cursor:pointer; transition:.2s; display:inline-flex; align-items:center; gap:8px}
+    .btn:hover{transform:translateY(-1px); filter:brightness(1.05)}
+    .btn.brand{background: linear-gradient(135deg, var(--brand), #b199ff)}
+    .btn.ghost{background:transparent; border:1px solid rgba(255,255,255,.08)}
+
+    /* Tabs */
+    .tabs{display:flex; gap:8px; background:rgba(255,255,255,.04); padding:8px; border-radius:12px; width:fit-content}
+    .tab{padding:8px 12px; border-radius:10px; cursor:pointer; color:var(--sub)}
+    .tab.active{background:var(--brand); color:#0b0b10; font-weight:700}
+
+    /* Layout grid */
+    .grid{display:grid; grid-template-columns:1.2fr .9fr; gap:16px; align-items:start}
+    .card{background:var(--card); border:1px solid rgba(255,255,255,.06); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow)}
+    .card h3{margin:0 0 8px 0; font-size:16px}
+    .hint{color:var(--sub); font-size:12px}
+
+    /* Weekly planner */
+    .week{display:grid; grid-template-columns:repeat(5,1fr); gap:12px}
+    .day{background:var(--muted); border-radius:14px; padding:10px; min-height:160px; display:flex; flex-direction:column; gap:10px}
+    .day h4{margin:0; font-size:14px; color:#d3d9ea}
+    .slot{background:rgba(255,255,255,.04); border:1px dashed rgba(255,255,255,.12); border-radius:12px; padding:10px; min-height:48px}
+    .lesson{background:linear-gradient(135deg, rgba(139,123,255,.25), rgba(124,224,204,.18)); border:1px solid rgba(139,123,255,.35); border-radius:12px; padding:10px; display:flex; align-items:center; justify-content:space-between; gap:8px}
+    .pill{font-size:11px; padding:4px 8px; background:rgba(255,255,255,.08); border-radius:999px}
+
+    /* Editor */
+    .field{display:flex; flex-direction:column; gap:6px; margin:10px 0}
+    label{font-size:12px; color:var(--sub)}
+    input, textarea, select{width:100%; background:var(--muted); color:var(--text); border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:10px 12px; outline:none; transition:.2s}
+    input:focus, textarea:focus, select:focus{box-shadow:var(--ring)}
+    textarea{min-height:84px; resize:vertical}
+
+    .row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    .toolbar{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+
+    /* Quick mode */
+    .quick{display:flex; gap:10px}
+    .quick textarea{min-height:50px}
+
+    /* Ideas bank */
+    .ideas{display:grid; grid-template-columns:repeat(2,1fr); gap:12px}
+    .idea{background:linear-gradient(180deg, rgba(255,255,255,.04), transparent); border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:12px;}
+    .idea .meta{display:flex; gap:8px; align-items:center; color:var(--sub); font-size:12px}
+    .tag{background:rgba(139,123,255,.2); color:#e9e1ff; font-size:11px; padding:3px 8px; border-radius:999px}
+
+    /* Correction panel */
+    .mode{display:flex; gap:8px; margin:8px 0}
+    .mode .btn{padding:8px 12px}
+    .mode .btn.active{background:var(--brand); color:#0b0b10; font-weight:700}
+
+    .grid-3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px}
+    .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+
+    table{width:100%; border-collapse:collapse; font-size:13px}
+    th, td{border-bottom:1px solid rgba(255,255,255,.08); padding:8px; text-align:left}
+    tr:hover{background:rgba(255,255,255,.03)}
+    .score{font-weight:700}
+    .ok{color:var(--ok)}
+    .bad{color:var(--danger)}
+
+    .progress{height:8px; background:rgba(255,255,255,.08); border-radius:999px; overflow:hidden}
+    .progress > i{display:block; height:100%; background:linear-gradient(90deg, var(--brand), var(--accent)); width:0%}
+
+    /* Toast */
+    .toast{position:fixed; right:16px; bottom:16px; background:#10131f; color:var(--text); padding:10px 14px; border:1px solid rgba(255,255,255,.08); border-radius:12px; box-shadow:var(--shadow); opacity:0; transform:translateY(8px); transition:.25s}
+    .toast.show{opacity:1; transform:translateY(0)}
+
+    /* Responsive */
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr}
+      .ideas{grid-template-columns:1fr}
+      .week{grid-template-columns:repeat(2,1fr)}
+      .grid-3{grid-template-columns:1fr}
+      .grid-2{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Bruna Profsense</h1>
+          <div class="sub">Planejamento de aulas, ideias com IA e correção inteligente</div>
+        </div>
+      </div>
+      <div class="actions">
+        <div class="tabs" role="tablist" aria-label="Seções do painel">
+          <div class="tab active" data-tab="plan" role="tab" aria-selected="true">Planejamento</div>
+          <div class="tab" data-tab="ideas" role="tab" aria-selected="false">Banco de Ideias</div>
+          <div class="tab" data-tab="grade" role="tab" aria-selected="false">Correção</div>
+        </div>
+        <button class="btn ghost" id="toggleTheme" title="Alternar contraste">☾</button>
+      </div>
+    </header>
+
+    <!-- PLANEJAMENTO -->
+    <section id="plan" class="grid" role="tabpanel" aria-labelledby="tab-plan">
+      <div class="card">
+        <h3>Planejamento semanal</h3>
+        <div class="hint">Arraste conteúdos salvos para um dia ou clique para editar.</div>
+        <div class="week" id="week"></div>
+        <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap">
+          <button class="btn brand" id="addLesson">+ Adicionar bloco rápido</button>
+          <button class="btn" id="exportWeek">Exportar semana (JSON)</button>
+          <button class="btn" id="printPlan">Imprimir/Salvar PDF</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Editor de aula (com IA)</h3>
+        <div class="field">
+          <label>Tema</label>
+          <input id="fTema" placeholder="Ex.: Fotossíntese – Introdução"/>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Objetivos de aprendizagem</label>
+            <textarea id="fObjetivos" placeholder="Os alunos serão capazes de…"></textarea>
+          </div>
+          <div class="field">
+            <label>Conteúdos / tópicos</label>
+            <textarea id="fConteudos" placeholder="Conceitos, palavras-chave…"></textarea>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Duração (min)</label>
+            <input id="fDuracao" type="number" min="5" value="50"/>
+          </div>
+          <div class="field">
+            <label>Turma / Série</label>
+            <input id="fTurma" placeholder="7º A"/>
+          </div>
+        </div>
+        <div class="field">
+          <label>Recursos</label>
+          <input id="fRecursos" placeholder="Slides, livro X, vídeo Y…"/>
+        </div>
+        <div class="toolbar">
+          <button class="btn brand" id="aiIdeas">🪄 Gerar ideias com IA</button>
+          <button class="btn" id="saveIdea">⭐ Salvar no Banco</button>
+          <button class="btn" id="clearEditor">Limpar</button>
+        </div>
+        <hr style="border:0;border-top:1px solid rgba(255,255,255,.08); margin:14px 0"/>
+        <div class="field">
+          <label>Modo rápido (prompt → plano)</label>
+          <div class="quick">
+            <textarea id="quickPrompt" placeholder="Ex.: Planeje 50 min sobre energia renovável com experimento simples."></textarea>
+          </div>
+          <div class="toolbar" style="margin-top:8px">
+            <button class="btn brand" id="quickGenerate">Gerar plano</button>
+            <span class="hint">Dica: depois edite e salve no banco 💾</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BANCO DE IDEIAS -->
+    <section id="ideas" class="card" style="display:none" role="tabpanel" aria-labelledby="tab-ideas">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap">
+        <h3>Banco de ideias</h3>
+        <div class="toolbar">
+          <button class="btn" id="exportIdeas">Exportar (JSON)</button>
+          <button class="btn ghost" id="clearIdeas">Limpar banco</button>
+        </div>
+      </div>
+      <div class="hint">Favoritos aparecem primeiro. Clique em uma ideia para abrir no editor.</div>
+      <div class="ideas" id="ideasList" style="margin-top:12px"></div>
+    </section>
+
+    <!-- CORREÇÃO -->
+    <section id="grade" class="card" style="display:none" role="tabpanel" aria-labelledby="tab-grade">
+      <h3>Painel de Correção Inteligente</h3>
+      <div class="mode">
+        <button class="btn active" data-cmode="obj">Objetiva (múltipla escolha)</button>
+        <button class="btn" data-cmode="disc">Dissertativa (texto)</button>
+      </div>
+
+      <!-- Objetiva -->
+      <div id="mode-obj">
+        <div class="grid-3">
+          <div class="field">
+            <label>Gabarito (ex.: ABCDEABCD)</label>
+            <input id="gabarito" placeholder="ABCDE"/>
+          </div>
+          <div class="field">
+            <label>Valor por questão</label>
+            <input id="valorQuestao" type="number" min="0" value="1"/>
+          </div>
+          <div class="field">
+            <label>Penalidade erro (opcional)</label>
+            <input id="penalidade" type="number" step="0.1" value="0"/>
+          </div>
+        </div>
+        <div class="field">
+          <label>Respostas dos alunos (CSV simples: nome,respostas)</label>
+          <textarea id="alunosCSV" placeholder="Ana, ABCDE\nBruno, ABCAD\n…" style="min-height:90px"></textarea>
+        </div>
+        <div class="toolbar">
+          <button class="btn brand" id="corrigirObj">Corrigir agora</button>
+          <button class="btn" id="exemploObj">Exemplo</button>
+          <button class="btn" id="exportObjCSV">Exportar CSV</button>
+          <span class="hint">Dica: use a mesma quantidade de letras do gabarito.</span>
+        </div>
+        <div id="objResumo" style="margin-top:10px"></div>
+        <div class="card" style="margin-top:12px">
+          <div class="hint">Resultados</div>
+          <div style="overflow:auto">
+            <table id="tObj"><thead></thead><tbody></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dissertativa -->
+      <div id="mode-disc" style="display:none">
+        <div class="grid-2">
+          <div class="field">
+            <label>Pergunta / Tarefa</label>
+            <textarea id="qDisc" placeholder="Explique o processo de fotossíntese e sua importância."></textarea>
+          </div>
+          <div class="field">
+            <label>Critérios (palavras-chave, separadas por vírgula)</label>
+            <input id="kDisc" placeholder="luz, clorofila, dióxido de carbono, glicose, oxigênio"/>
+          </div>
+        </div>
+        <div class="grid-3">
+          <div class="field">
+            <label>Pontuação total</label>
+            <input id="maxDisc" type="number" min="1" value="10"/>
+          </div>
+          <div class="field">
+            <label>Feedback padrão (prefixo)</label>
+            <input id="fbPrefix" value="Você apresentou bons pontos. " />
+          </div>
+          <div class="field">
+            <label>Feedback padrão (final)</label>
+            <input id="fbSuffix" value=" Reveja os conceitos ausentes para melhorar." />
+          </div>
+        </div>
+        <div class="field">
+          <label>Respostas dos alunos (formato: Nome: resposta)</label>
+          <textarea id="discAlunos" style="min-height:120px" placeholder="Ana: A fotossíntese utiliza luz e CO2 para produzir glicose e oxigênio...\nBruno: ..."></textarea>
+        </div>
+        <div class="toolbar">
+          <button class="btn brand" id="corrigirDisc">Corrigir agora</button>
+          <button class="btn" id="exemploDisc">Exemplo</button>
+          <button class="btn" id="exportDiscCSV">Exportar CSV</button>
+        </div>
+        <div id="discResumo" style="margin-top:10px"></div>
+        <div class="card" style="margin-top:12px">
+          <div class="hint">Resultados</div>
+          <div style="overflow:auto">
+            <table id="tDisc"><thead></thead><tbody></tbody></table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="toast" id="toast">Pronto! ✅</div>
+  </div>
+
+  <script>
+    // ————— util —————
+    const $ = (s, root=document) => root.querySelector(s);
+    const $$ = (s, root=document) => Array.from(root.querySelectorAll(s));
+    const toast = (msg) => { const t=$('#toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 1800) };
+
+    // ————— tabs —————
+    $$('.tab').forEach(tab=>{
+      tab.addEventListener('click', ()=>{
+        $$('.tab').forEach(t=>t.classList.remove('active'));
+        tab.classList.add('active');
+        ['plan','ideas','grade'].forEach(id=> $('#'+id).style.display = (tab.dataset.tab===id)? (id==='plan'?'grid':'block') : 'none');
+      })
+    })
+
+    // ————— theme toggle (alto contraste) —————
+    $('#toggleTheme').addEventListener('click', ()=>{
+      const dark = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()==='#0f0f13';
+      if(dark){
+        document.documentElement.style.setProperty('--bg', '#f7f8fc');
+        document.documentElement.style.setProperty('--card', '#ffffff');
+        document.documentElement.style.setProperty('--muted', '#f0f2fa');
+        document.documentElement.style.setProperty('--text', '#12131a');
+        document.documentElement.style.setProperty('--sub', '#5c667f');
+      }else{
+        document.documentElement.style.setProperty('--bg', '#0f0f13');
+        document.documentElement.style.setProperty('--card', '#151824');
+        document.documentElement.style.setProperty('--muted', '#1b1f2e');
+        document.documentElement.style.setProperty('--text', '#e9ecf1');
+        document.documentElement.style.setProperty('--sub', '#aeb6c8');
+      }
+    })
+
+    // ————— weekly planner data —————
+    const days = ['Seg','Ter','Qua','Qui','Sex'];
+    const weekEl = $('#week');
+    const state = {
+      week: days.map(d=>({ day:d, items:[] })),
+      ideas: JSON.parse(localStorage.getItem('ideas')||'[]')
+    };
+
+    function renderWeek(){
+      weekEl.innerHTML='';
+      state.week.forEach((d,di)=>{
+        const day = document.createElement('div'); day.className='day';
+        day.innerHTML = `<h4>${d.day}</h4>`;
+        const slot = document.createElement('div'); slot.className='slot'; slot.dataset.day=di;
+        // items
+        d.items.forEach((it, idx)=>{
+          const el = document.createElement('div'); el.className='lesson'; el.draggable=true; el.dataset.day=di; el.dataset.index=idx;
+          el.innerHTML = `<div><strong>${it.tema||'Sem título'}</strong><div class="hint">${it.turma||''} • ${it.duracao||''}min</div></div><span class="pill">${(it.conteudos||'').split(',')[0]||'Conteúdo'}</span>`;
+          el.addEventListener('click',()=>loadToEditor(it));
+          el.addEventListener('dragstart', e=>{
+            e.dataTransfer.setData('text/plain', JSON.stringify({fromDay:di, index:idx}))
+          })
+          slot.appendChild(el);
+        })
+        slot.addEventListener('dragover', e=>{ e.preventDefault(); slot.style.boxShadow='var(--ring)'; });
+        slot.addEventListener('dragleave', ()=>{ slot.style.boxShadow='none'; });
+        slot.addEventListener('drop', e=>{
+          slot.style.boxShadow='none';
+          const payload = JSON.parse(e.dataTransfer.getData('text/plain'));
+          const item = state.week[payload.fromDay].items.splice(payload.index,1)[0];
+          state.week[di].items.push(item);
+          renderWeek();
+        })
+        day.appendChild(slot);
+        weekEl.appendChild(day);
+      })
+    }
+
+    function addQuickLesson(){
+      const it = collectEditor();
+      if(!it.tema) it.tema = 'Bloco sem título';
+      state.week[0].items.push(it);
+      renderWeek(); toast('Bloco adicionado na segunda-feira');
+    }
+
+    $('#addLesson').addEventListener('click', addQuickLesson);
+    $('#exportWeek').addEventListener('click', ()=>{
+      const data = JSON.stringify(state.week, null, 2);
+      download('semana.json', data);
+    });
+    $('#printPlan').addEventListener('click', ()=> window.print());
+
+    // ————— editor —————
+    function collectEditor(){
+      return {
+        tema: $('#fTema').value.trim(),
+        objetivos: $('#fObjetivos').value.trim(),
+        conteudos: $('#fConteudos').value.trim(),
+        duracao: +($('#fDuracao').value||0),
+        turma: $('#fTurma').value.trim(),
+        recursos: $('#fRecursos').value.trim(),
+        createdAt: Date.now()
+      }
+    }
+    function loadToEditor(item){
+      $('#fTema').value = item.tema||'';
+      $('#fObjetivos').value = item.objetivos||'';
+      $('#fConteudos').value = item.conteudos||'';
+      $('#fDuracao').value = item.duracao||50;
+      $('#fTurma').value = item.turma||'';
+      $('#fRecursos').value = item.recursos||'';
+      toast('Carregado no editor');
+      // alterna para aba planejamento
+      $$('.tab').forEach(t=>{ if(t.dataset.tab==='plan'){ t.click(); }});
+    }
+
+    $('#clearEditor').addEventListener('click', ()=>{
+      ['fTema','fObjetivos','fConteudos','fDuracao','fTurma','fRecursos','quickPrompt'].forEach(id=> $('#'+id).value='');
+    })
+
+    // ——— AI mock: gera ideias
+    const AI_TEMPLATES = [
+      (it)=>({titulo:`${it.tema||'Aula'}: do zero ao exemplo prático`,
+        objetivos:`Definir ${pick(['conceitos-chave','terminologia básica','passos do processo'])} e aplicar em uma atividade guiada.`,
+        atividades:`Abertura (5’): pergunta disparadora.\nExposição (15’): ${pick(['mapa mental','mini-experimento','história rápida'])}.\nPrática (20’): atividade em dupla.\nFechamento (10’): quiz rápido + saída com 1 insight.`,
+        avaliacao:`Rubrica simples (0-2) por critério: compreensão, aplicação e comunicação.`,
+        materiais: it.recursos||'quadro, marcadores, celular do prof para timer',
+        tags:['sugestão','estrutura']
+      }),
+      (it)=>({titulo:`${it.tema||'Tema'} com gamificação`,
+        objetivos:`Motivar participação usando pontos e medalhas por acertos e colaboração.`,
+        atividades:`Jogo de cartas (conteúdos-chave).\nDesafio relâmpago em grupos.\nPlacar visível + feedback rápido.`,
+        avaliacao:`Média entre participação e acertos.`,
+        materiais:`cartas, cronômetro, post-its`,
+        tags:['gamificação']
+      }),
+      (it)=>({titulo:`Estação de aprendizagem: ${it.tema||'assunto'}`,
+        objetivos:`Rotacionar grupos por 3 estações (teoria, prática, revisão).`,
+        atividades:`3 estações de 12’ cada + 2’ transição.`,
+        avaliacao:`Checklist por estação.`,
+        materiais:`fichas, QR-codes para vídeo`,
+        tags:['estações']
+      })
+    ];
+
+    function pick(arr){ return arr[Math.floor(Math.random()*arr.length)] }
+
+    $('#aiIdeas').addEventListener('click', ()=>{
+      const it = collectEditor();
+      const gen = pick(AI_TEMPLATES)(it);
+      // injeta no editor como complementos
+      $('#fObjetivos').value = (it.objetivos? it.objetivos+"\n" : '') + gen.objetivos;
+      $('#fConteudos').value = (it.conteudos? it.conteudos+"\n" : '') + (gen.atividades? 'Atividades:\n'+gen.atividades : '');
+      $('#fRecursos').value = (it.recursos? it.recursos+", " : '') + gen.materiais;
+      toast('Ideias geradas ✨ (mock)');
+      // também sugere para o banco
+      const idea = {titulo:gen.titulo, corpo:`Objetivos: ${gen.objetivos}\nAtividades: ${gen.atividades}\nAvaliação: ${gen.avaliacao}\nMateriais: ${gen.materiais}`, tags:gen.tags, favorite:false, createdAt:Date.now()};
+      pushIdea(idea);
+    })
+
+    $('#saveIdea').addEventListener('click', ()=>{
+      const it = collectEditor();
+      const idea = {titulo: it.tema||'Ideia sem título', corpo:`Obj.: ${it.objetivos}\nCont.: ${it.conteudos}\nDuração: ${it.duracao} min\nRecursos: ${it.recursos}\nTurma: ${it.turma}`, tags:['manual'], favorite:false, createdAt:Date.now()};
+      pushIdea(idea);
+      toast('Salvo no banco ⭐');
+    })
+
+    $('#quickGenerate').addEventListener('click', ()=>{
+      const p = $('#quickPrompt').value.trim();
+      if(!p) return toast('Escreva um pedido no Modo rápido');
+      // mock simples: extrai tema por heurística
+      const tema = (p.match(/sobre ([^\.]*)/i)||[])[1] || 'Tema sugerido';
+      $('#fTema').value = capitalize(tema);
+      $('#fObjetivos').value = '• Compreender conceitos básicos.\n• Aplicar em uma atividade prática.\n• Comunicar resultados.';
+      $('#fConteudos').value = 'Definições principais\nExemplos do cotidiano\nAtividade prática guiada\nChecklist de revisão';
+      $('#fDuracao').value = 50;
+      $('#fRecursos').value = 'quadro, projetor, celular (cronômetro), folhas A4';
+      toast('Plano rascunhado ✏️ (mock)');
+    })
+
+    function capitalize(s){ return s.charAt(0).toUpperCase()+s.slice(1) }
+
+    function pushIdea(idea){
+      state.ideas.push(idea);
+      persistIdeas();
+      renderIdeas();
+    }
+
+    function persistIdeas(){ localStorage.setItem('ideas', JSON.stringify(state.ideas)) }
+
+    function renderIdeas(){
+      const list = $('#ideasList');
+      list.innerHTML='';
+      const sorted = [...state.ideas].sort((a,b)=> (b.favorite?-1:1) - (a.favorite?-1:1) || b.createdAt-a.createdAt);
+      if(!sorted.length){ list.innerHTML = `<div class="hint">Nenhuma ideia ainda. Use “Gerar ideias” ou “Salvar no Banco”.</div>`; return; }
+      sorted.forEach((id, idx)=>{
+        const el = document.createElement('div'); el.className='idea';
+        el.innerHTML = `
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px">
+            <div>
+              <strong style="display:block; margin-bottom:6px">${escapeHTML(id.titulo)}</strong>
+              <pre style="white-space:pre-wrap; margin:0; color:#dfe6ff">${escapeHTML(id.corpo)}</pre>
+              <div class="meta" style="margin-top:8px">
+                ${(id.tags||[]).map(t=>`<span class='tag'>${escapeHTML(t)}</span>`).join(' ')}
+                <span class="hint">• ${new Date(id.createdAt).toLocaleString()}</span>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-end">
+              <button class="btn" aria-label="Favoritar" title="Favoritar">${id.favorite?'💜':'🤍'}</button>
+              <button class="btn" aria-label="Usar no editor" title="Usar no editor">↗️</button>
+              <button class="btn" aria-label="Excluir" title="Excluir">🗑️</button>
+            </div>
+          </div>`;
+        const [favBtn,useBtn,delBtn] = el.querySelectorAll('button');
+        favBtn.addEventListener('click', ()=>{ id.favorite=!id.favorite; persistIdeas(); renderIdeas(); })
+        useBtn.addEventListener('click', ()=>{
+          loadToEditor({
+            tema:id.titulo,
+            objetivos: id.corpo.match(/Objetivos?:\s*([\s\S]*?)\n(?:Atividades|Avaliação|Materiais)/i)?.[1]||'',
+            conteudos: id.corpo.match(/Atividades?:\s*([\s\S]*?)\n(?:Avaliação|Materiais)/i)?.[1]||'',
+            recursos: id.corpo.match(/Materiais?:\s*([\s\S]*)/i)?.[1]||''
+          })
+        })
+        delBtn.addEventListener('click', ()=>{
+          if(confirm('Excluir esta ideia?')){ state.ideas.splice(state.ideas.indexOf(id),1); persistIdeas(); renderIdeas(); }
+        })
+        list.appendChild(el);
+      })
+    }
+
+    $('#exportIdeas').addEventListener('click', ()=> download('ideas.json', JSON.stringify(state.ideas,null,2)) );
+    $('#clearIdeas').addEventListener('click', ()=>{ if(confirm('Limpar todo o banco de ideias?')){ state.ideas=[]; persistIdeas(); renderIdeas(); } });
+
+    function escapeHTML(s=''){ return s.replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m])) }
+    function download(name, content){
+      const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([content],{type:'application/json'})); a.download=name; a.click(); URL.revokeObjectURL(a.href);
+    }
+
+    // ————— Correção Objetiva —————
+    $('#exemploObj').addEventListener('click', ()=>{
+      $('#gabarito').value='ABCDEABCDE';
+      $('#alunosCSV').value = 'Ana, ABCDEABCDE\nBruno, ABCDDABCDC\nCarla, BBCDEABCDA\nDiego, ABCDEABCDD';
+      toast('Exemplo carregado');
+    })
+
+    function corrigeObjetiva(){
+      const gab = $('#gabarito').value.trim().toUpperCase();
+      if(!gab){ toast('Preencha o gabarito'); return; }
+      const valor = parseFloat($('#valorQuestao').value||'1');
+      const pena = parseFloat($('#penalidade').value||'0');
+      const linhas = $('#alunosCSV').value.trim().split(/\n+/).filter(Boolean);
+      const alunos = linhas.map(l=>{ const [nome, respRaw] = l.split(',').map(s=>s.trim()); return {nome, resp:(respRaw||'').toUpperCase()}; }).filter(a=>a.nome);
+      if(!alunos.length){ toast('Adicione pelo menos um aluno'); return; }
+      const headers = ['Aluno'];
+      for(let i=0;i<gab.length;i++) headers.push('Q'+(i+1));
+      headers.push('Acertos','Nota');
+      const thead = $('#tObj thead'); thead.innerHTML = '<tr>'+headers.map(h=>`<th>${h}</th>`).join('')+'</tr>';
+      const tbody = $('#tObj tbody'); tbody.innerHTML='';
+      let acertosTurma = 0;
+      alunos.forEach(al=>{
+        let acertos=0; const tds=[`<td><strong>${escapeHTML(al.nome)}</strong></td>`];
+        for(let i=0;i<gab.length;i++){
+          const ok = al.resp[i]===gab[i];
+          acertos += ok?1:0;
+          tds.push(`<td class="${ok?'ok':'bad'}">${al.resp[i]||'-'}</td>`)
+        }
+        const nota = acertos*valor - (gab.length-acertos)*Math.max(0,pena);
+        acertosTurma += acertos;
+        tds.push(`<td class='score'>${acertos}</td>`);
+        tds.push(`<td class='score'>${Math.max(0,nota).toFixed(2)}</td>`);
+        tbody.insertAdjacentHTML('beforeend', `<tr>${tds.join('')}</tr>`);
+      })
+      // resumo
+      const mediaAcertos = acertosTurma/(alunos.length||1);
+      const pct = (100*mediaAcertos/(gab.length||1))|0;
+      $('#objResumo').innerHTML = `
+        <div class="grid-3">
+          <div class="card"><div class="hint">Média de acertos</div><div style="font-size:22px;font-weight:800">${mediaAcertos.toFixed(1)} / ${gab.length}</div><div class="progress" style="margin-top:8px"><i style="width:${pct}%"></i></div></div>
+          <div class="card"><div class="hint">Valor por questão</div><div style="font-size:22px;font-weight:800">${valor}</div></div>
+          <div class="card"><div class="hint">Penalidade por erro</div><div style="font-size:22px;font-weight:800">${pena}</div></div>
+        </div>`;
+      toast('Corrigido ✅');
+      // guarda última
+      window._lastObj = {headers, alunos, gabarito:gab, valor, penalidade:pena};
+    }
+
+    $('#corrigirObj').addEventListener('click', corrigeObjetiva);
+
+    $('#exportObjCSV').addEventListener('click', ()=>{
+      if(!window._lastObj){ toast('Nada para exportar'); return; }
+      const {headers, alunos, gabarito, valor, penalidade} = window._lastObj;
+      const lines = [headers.join(',')];
+      alunos.forEach(al=>{
+        let row=[`"${al.nome.replaceAll('"','\"')}"`];
+        for(let i=0;i<gabarito.length;i++) row.push(al.resp[i]||'');
+        const acertos = al.resp.split('').slice(0,gabarito.length).filter((c,i)=>c===gabarito[i]).length;
+        const nota = acertos*valor - (gabarito.length-acertos)*Math.max(0,penalidade);
+        row.push(acertos, Math.max(0,nota).toFixed(2));
+        lines.push(row.join(','));
+      })
+      const csv = lines.join('\n');
+      download('resultado_objetiva.csv', csv);
+      toast('CSV gerado');
+    })
+
+    // ————— Correção Dissertativa —————
+    $('#exemploDisc').addEventListener('click', ()=>{
+      $('#qDisc').value = 'Explique o processo de fotossíntese e sua importância para os seres vivos.';
+      $('#kDisc').value = 'luz, clorofila, dióxido de carbono, CO2, glicose, oxigênio, água, energia química';
+      $('#discAlunos').value = 'Ana: A planta usa luz e CO2 com água para produzir glicose e soltar oxigênio.\nBruno: A fotossíntese precisa de clorofila e luz; transforma energia solar em energia química.';
+      toast('Exemplo carregado');
+    })
+
+    function corrigeDissertativa(){
+      const kraw = $('#kDisc').value.toLowerCase();
+      const keys = kraw.split(',').map(s=>s.trim()).filter(Boolean);
+      const max = parseFloat($('#maxDisc').value||'10');
+      const lines = $('#discAlunos').value.split(/\n+/).filter(Boolean);
+      if(!keys.length || !lines.length){ toast('Preencha critérios e respostas'); return; }
+      const thead = $('#tDisc thead'); thead.innerHTML = '<tr><th>Aluno</th><th>Ocorrências</th><th>Nota</th><th>Feedback</th></tr>';
+      const tbody = $('#tDisc tbody'); tbody.innerHTML='';
+      let soma=0;
+      const rows=[];
+      lines.forEach(l=>{
+        const [nome, ...rest] = l.split(':');
+        const texto = (rest.join(':')||'').trim();
+        const low = texto.toLowerCase();
+        let hits=0; const missing=[];
+        keys.forEach(k=>{ if(low.includes(k)) hits++; else missing.push(k) })
+        const nota = Math.max(0, Math.min(max, (hits/keys.length)*max));
+        soma += nota;
+        const fb = `${$('#fbPrefix').value}${missing.length? ' Faltou mencionar: '+missing.slice(0,3).join(', ') + (missing.length>3?'…':'') : ' Excelente cobertura dos critérios.'}${$('#fbSuffix').value}`;
+        rows.push({nome:nome?.trim()||'—', hits, nota: +nota.toFixed(2), fb});
+        tbody.insertAdjacentHTML('beforeend', `<tr><td><strong>${escapeHTML(nome||'—')}</strong></td><td>${hits}/${keys.length}</td><td class='score'>${nota.toFixed(2)}</td><td>${escapeHTML(fb)}</td></tr>`)
+      })
+      const media = soma/(rows.length||1);
+      $('#discResumo').innerHTML = `
+        <div class="grid-3">
+          <div class="card"><div class="hint">Média da turma</div><div style="font-size:22px;font-weight:800">${media.toFixed(2)} / ${max}</div><div class="progress" style="margin-top:8px"><i style="width:${(100*media/max)|0}%"></i></div></div>
+          <div class="card"><div class="hint">Critérios avaliados</div><div style="font-size:22px;font-weight:800">${keys.length}</div></div>
+          <div class="card"><div class="hint">Alunos corrigidos</div><div style="font-size:22px;font-weight:800">${rows.length}</div></div>
+        </div>`;
+      toast('Corrigido ✅');
+      window._lastDisc = {rows, max, keys};
+    }
+
+    $('#corrigirDisc').addEventListener('click', corrigeDissertativa);
+
+    $('#exportDiscCSV').addEventListener('click', ()=>{
+      if(!window._lastDisc){ toast('Nada para exportar'); return; }
+      const {rows, max, keys} = window._lastDisc;
+      const lines = [ ['Aluno','Ocorrências','Nota','Max','ChavesUsadas'].join(',') ];
+      rows.forEach(r=> lines.push([`"${r.nome.replaceAll('"','\"')}"`, `${r.hits}/${keys.length}`, r.nota, max, `"${keys.join(' | ').replaceAll('"','\"')}"`].join(',')) );
+      download('resultado_dissertativa.csv', lines.join('\n'));
+      toast('CSV gerado');
+    })
+
+    // ————— Correção mode toggle —————
+    $$('[data-cmode]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        $$('[data-cmode]').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const mode = btn.dataset.cmode;
+        $('#mode-obj').style.display = mode==='obj' ? 'block' : 'none';
+        $('#mode-disc').style.display = mode==='disc' ? 'block' : 'none';
+      })
+    })
+
+    // ————— init —————
+    renderWeek();
+
+  </script>
+</body>
+</html>
