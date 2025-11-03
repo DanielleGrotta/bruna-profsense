@@ -3,26 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Bruna Profsense — Planejamento & Correção com IA (protótipo)</title>
+  <title>Bruna Profsense — Planejamento & Correção com IA</title>
   <style>
     :root{
-      --bg:#0f0f13;
-      --card:#151824;
-      --muted:#1b1f2e;
-      --brand:#8b7bff; /* lilás fofo */
-      --accent:#7ce0cc; /* verde-água suave */
-      --text:#e9ecf1;
-      --sub:#aeb6c8;
-      --warn:#ffcd6b;
-      --danger:#ff7a8a;
-      --ok:#7fe39a;
-      --radius:18px;
-      --shadow:0 10px 30px rgba(0,0,0,.25);
+      --bg:#0f0f13; --card:#151824; --muted:#1b1f2e;
+      --brand:#8b7bff; --accent:#7ce0cc; --text:#e9ecf1; --sub:#aeb6c8;
+      --warn:#ffcd6b; --danger:#ff7a8a; --ok:#7fe39a;
+      --radius:18px; --shadow:0 10px 30px rgba(0,0,0,.25);
       --ring:0 0 0 2px rgba(139,123,255,.28),0 0 0 8px rgba(139,123,255,.08);
       --grid:12px;
     }
     *{box-sizing:border-box}
-    body{margin:0;font:500 15px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; color:var(--text); background: radial-gradient(1200px 600px at 20% -10%, rgba(139,123,255,.16), transparent 60%), radial-gradient(800px 400px at 110% 10%, rgba(124,224,204,.12), transparent 60%), var(--bg);}    
+    body{margin:0;font:500 15px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; color:var(--text); background:
+      radial-gradient(1200px 600px at 20% -10%, rgba(139,123,255,.16), transparent 60%),
+      radial-gradient(800px 400px at 110% 10%, rgba(124,224,204,.12), transparent 60%),
+      var(--bg);}
     .app{max-width:1200px;margin:24px auto;padding:16px}
 
     header{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:16px}
@@ -38,18 +33,15 @@
     .btn.brand{background: linear-gradient(135deg, var(--brand), #b199ff)}
     .btn.ghost{background:transparent; border:1px solid rgba(255,255,255,.08)}
 
-    /* Tabs */
     .tabs{display:flex; gap:8px; background:rgba(255,255,255,.04); padding:8px; border-radius:12px; width:fit-content}
     .tab{padding:8px 12px; border-radius:10px; cursor:pointer; color:var(--sub)}
     .tab.active{background:var(--brand); color:#0b0b10; font-weight:700}
 
-    /* Layout grid */
     .grid{display:grid; grid-template-columns:1.2fr .9fr; gap:16px; align-items:start}
     .card{background:var(--card); border:1px solid rgba(255,255,255,.06); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow)}
     .card h3{margin:0 0 8px 0; font-size:16px}
     .hint{color:var(--sub); font-size:12px}
 
-    /* Weekly planner */
     .week{display:grid; grid-template-columns:repeat(5,1fr); gap:12px}
     .day{background:var(--muted); border-radius:14px; padding:10px; min-height:160px; display:flex; flex-direction:column; gap:10px}
     .day h4{margin:0; font-size:14px; color:#d3d9ea}
@@ -57,7 +49,6 @@
     .lesson{background:linear-gradient(135deg, rgba(139,123,255,.25), rgba(124,224,204,.18)); border:1px solid rgba(139,123,255,.35); border-radius:12px; padding:10px; display:flex; align-items:center; justify-content:space-between; gap:8px}
     .pill{font-size:11px; padding:4px 8px; background:rgba(255,255,255,.08); border-radius:999px}
 
-    /* Editor */
     .field{display:flex; flex-direction:column; gap:6px; margin:10px 0}
     label{font-size:12px; color:var(--sub)}
     input, textarea, select{width:100%; background:var(--muted); color:var(--text); border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:10px 12px; outline:none; transition:.2s}
@@ -67,17 +58,14 @@
     .row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
     .toolbar{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
 
-    /* Quick mode */
     .quick{display:flex; gap:10px}
     .quick textarea{min-height:50px}
 
-    /* Ideas bank */
     .ideas{display:grid; grid-template-columns:repeat(2,1fr); gap:12px}
     .idea{background:linear-gradient(180deg, rgba(255,255,255,.04), transparent); border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:12px;}
     .idea .meta{display:flex; gap:8px; align-items:center; color:var(--sub); font-size:12px}
     .tag{background:rgba(139,123,255,.2); color:#e9e1ff; font-size:11px; padding:3px 8px; border-radius:999px}
 
-    /* Correction panel */
     .mode{display:flex; gap:8px; margin:8px 0}
     .mode .btn{padding:8px 12px}
     .mode .btn.active{background:var(--brand); color:#0b0b10; font-weight:700}
@@ -95,11 +83,9 @@
     .progress{height:8px; background:rgba(255,255,255,.08); border-radius:999px; overflow:hidden}
     .progress > i{display:block; height:100%; background:linear-gradient(90deg, var(--brand), var(--accent)); width:0%}
 
-    /* Toast */
     .toast{position:fixed; right:16px; bottom:16px; background:#10131f; color:var(--text); padding:10px 14px; border:1px solid rgba(255,255,255,.08); border-radius:12px; box-shadow:var(--shadow); opacity:0; transform:translateY(8px); transition:.25s}
     .toast.show{opacity:1; transform:translateY(0)}
 
-    /* Responsive */
     @media (max-width: 980px){
       .grid{grid-template-columns:1fr}
       .ideas{grid-template-columns:1fr}
@@ -230,7 +216,7 @@
         </div>
         <div class="field">
           <label>Respostas dos alunos (CSV simples: nome,respostas)</label>
-          <textarea id="alunosCSV" placeholder="Ana, ABCDE\nBruno, ABCAD\n…" style="min-height:90px"></textarea>
+          <textarea id="alunosCSV" placeholder="Ana, ABCDE&#10;Bruno, ABCAD&#10;…" style="min-height:90px"></textarea>
         </div>
         <div class="toolbar">
           <button class="btn brand" id="corrigirObj">Corrigir agora</button>
@@ -275,7 +261,7 @@
         </div>
         <div class="field">
           <label>Respostas dos alunos (formato: Nome: resposta)</label>
-          <textarea id="discAlunos" style="min-height:120px" placeholder="Ana: A fotossíntese utiliza luz e CO2 para produzir glicose e oxigênio...\nBruno: ..."></textarea>
+          <textarea id="discAlunos" style="min-height:120px" placeholder="Ana: A fotossíntese utiliza luz e CO2 para produzir glicose e oxigênio...&#10;Bruno: ..."></textarea>
         </div>
         <div class="toolbar">
           <button class="btn brand" id="corrigirDisc">Corrigir agora</button>
@@ -296,12 +282,12 @@
   </div>
 
   <script>
-    // ————— util —————
+    // util
     const $ = (s, root=document) => root.querySelector(s);
     const $$ = (s, root=document) => Array.from(root.querySelectorAll(s));
     const toast = (msg) => { const t=$('#toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 1800) };
 
-    // ————— tabs —————
+    // tabs
     $$('.tab').forEach(tab=>{
       tab.addEventListener('click', ()=>{
         $$('.tab').forEach(t=>t.classList.remove('active'));
@@ -310,7 +296,7 @@
       })
     })
 
-    // ————— theme toggle (alto contraste) —————
+    // theme toggle
     $('#toggleTheme').addEventListener('click', ()=>{
       const dark = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()==='#0f0f13';
       if(dark){
@@ -328,7 +314,7 @@
       }
     })
 
-    // ————— weekly planner data —————
+    // planner
     const days = ['Seg','Ter','Qua','Qui','Sex'];
     const weekEl = $('#week');
     const state = {
@@ -342,14 +328,11 @@
         const day = document.createElement('div'); day.className='day';
         day.innerHTML = `<h4>${d.day}</h4>`;
         const slot = document.createElement('div'); slot.className='slot'; slot.dataset.day=di;
-        // items
         d.items.forEach((it, idx)=>{
           const el = document.createElement('div'); el.className='lesson'; el.draggable=true; el.dataset.day=di; el.dataset.index=idx;
           el.innerHTML = `<div><strong>${it.tema||'Sem título'}</strong><div class="hint">${it.turma||''} • ${it.duracao||''}min</div></div><span class="pill">${(it.conteudos||'').split(',')[0]||'Conteúdo'}</span>`;
           el.addEventListener('click',()=>loadToEditor(it));
-          el.addEventListener('dragstart', e=>{
-            e.dataTransfer.setData('text/plain', JSON.stringify({fromDay:di, index:idx}))
-          })
+          el.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain', JSON.stringify({fromDay:di, index:idx})) })
           slot.appendChild(el);
         })
         slot.addEventListener('dragover', e=>{ e.preventDefault(); slot.style.boxShadow='var(--ring)'; });
@@ -374,13 +357,10 @@
     }
 
     $('#addLesson').addEventListener('click', addQuickLesson);
-    $('#exportWeek').addEventListener('click', ()=>{
-      const data = JSON.stringify(state.week, null, 2);
-      download('semana.json', data);
-    });
+    $('#exportWeek').addEventListener('click', ()=>{ const data = JSON.stringify(state.week, null, 2); download('semana.json', data); });
     $('#printPlan').addEventListener('click', ()=> window.print());
 
-    // ————— editor —————
+    // editor helpers
     function collectEditor(){
       return {
         tema: $('#fTema').value.trim(),
@@ -400,90 +380,67 @@
       $('#fTurma').value = item.turma||'';
       $('#fRecursos').value = item.recursos||'';
       toast('Carregado no editor');
-      // alterna para aba planejamento
       $$('.tab').forEach(t=>{ if(t.dataset.tab==='plan'){ t.click(); }});
     }
 
-    $('#clearEditor').addEventListener('click', ()=>{
-      ['fTema','fObjetivos','fConteudos','fDuracao','fTurma','fRecursos','quickPrompt'].forEach(id=> $('#'+id).value='');
-    })
+    $('#clearEditor').addEventListener('click', ()=>{ ['fTema','fObjetivos','fConteudos','fDuracao','fTurma','fRecursos','quickPrompt'].forEach(id=> $('#'+id).value=''); })
 
-    // ——— AI mock: gera ideias
-    const AI_TEMPLATES = [
-      (it)=>({titulo:`${it.tema||'Aula'}: do zero ao exemplo prático`,
-        objetivos:`Definir ${pick(['conceitos-chave','terminologia básica','passos do processo'])} e aplicar em uma atividade guiada.`,
-        atividades:`Abertura (5’): pergunta disparadora.\nExposição (15’): ${pick(['mapa mental','mini-experimento','história rápida'])}.\nPrática (20’): atividade em dupla.\nFechamento (10’): quiz rápido + saída com 1 insight.`,
-        avaliacao:`Rubrica simples (0-2) por critério: compreensão, aplicação e comunicação.`,
-        materiais: it.recursos||'quadro, marcadores, celular do prof para timer',
-        tags:['sugestão','estrutura']
-      }),
-      (it)=>({titulo:`${it.tema||'Tema'} com gamificação`,
-        objetivos:`Motivar participação usando pontos e medalhas por acertos e colaboração.`,
-        atividades:`Jogo de cartas (conteúdos-chave).\nDesafio relâmpago em grupos.\nPlacar visível + feedback rápido.`,
-        avaliacao:`Média entre participação e acertos.`,
-        materiais:`cartas, cronômetro, post-its`,
-        tags:['gamificação']
-      }),
-      (it)=>({titulo:`Estação de aprendizagem: ${it.tema||'assunto'}`,
-        objetivos:`Rotacionar grupos por 3 estações (teoria, prática, revisão).`,
-        atividades:`3 estações de 12’ cada + 2’ transição.`,
-        avaliacao:`Checklist por estação.`,
-        materiais:`fichas, QR-codes para vídeo`,
-        tags:['estações']
-      })
-    ];
-
-    function pick(arr){ return arr[Math.floor(Math.random()*arr.length)] }
-
-    $('#aiIdeas').addEventListener('click', ()=>{
+    // ===== IA REAL: gerar ideias com API =====
+    $('#aiIdeas').addEventListener('click', async ()=>{
       const it = collectEditor();
-      const gen = pick(AI_TEMPLATES)(it);
-      // injeta no editor como complementos
-      $('#fObjetivos').value = (it.objetivos? it.objetivos+"\n" : '') + gen.objetivos;
-      $('#fConteudos').value = (it.conteudos? it.conteudos+"\n" : '') + (gen.atividades? 'Atividades:\n'+gen.atividades : '');
-      $('#fRecursos').value = (it.recursos? it.recursos+", " : '') + gen.materiais;
-      toast('Ideias geradas ✨ (mock)');
-      // também sugere para o banco
-      const idea = {titulo:gen.titulo, corpo:`Objetivos: ${gen.objetivos}\nAtividades: ${gen.atividades}\nAvaliação: ${gen.avaliacao}\nMateriais: ${gen.materiais}`, tags:gen.tags, favorite:false, createdAt:Date.now()};
-      pushIdea(idea);
-    })
+      try{
+        const r = await fetch('/api/ideas', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({
+            tema: it.tema, objetivos: it.objetivos, conteudos: it.conteudos,
+            duracao: it.duracao || 50, turma: it.turma
+          })
+        });
+        if(!r.ok) throw new Error('Falha na rota /api/ideas');
+        const data = await r.json(); // {titulo, objetivos, atividades, avaliacao, materiais, tags}
+        // injeta no editor
+        $('#fTema').value = data.titulo || it.tema || 'Plano de aula';
+        $('#fObjetivos').value = (it.objetivos? it.objetivos+"\n" : '') + (data.objetivos||'');
+        $('#fConteudos').value = (it.conteudos? it.conteudos+"\n" : '') + (data.atividades ? 'Atividades:\n'+data.atividades : '');
+        $('#fRecursos').value = (it.recursos? it.recursos+', ' : '') + (data.materiais||'');
+        toast('Ideias geradas pela IA ✨');
 
-    $('#saveIdea').addEventListener('click', ()=>{
-      const it = collectEditor();
-      const idea = {titulo: it.tema||'Ideia sem título', corpo:`Obj.: ${it.objetivos}\nCont.: ${it.conteudos}\nDuração: ${it.duracao} min\nRecursos: ${it.recursos}\nTurma: ${it.turma}`, tags:['manual'], favorite:false, createdAt:Date.now()};
-      pushIdea(idea);
-      toast('Salvo no banco ⭐');
-    })
+        // salva versão no banco
+        const idea = {
+          titulo: data.titulo || (it.tema||'Ideia sem título'),
+          corpo: `Objetivos: ${data.objetivos||''}\nAtividades: ${data.atividades||''}\nAvaliação: ${data.avaliacao||''}\nMateriais: ${data.materiais||''}`,
+          tags: data.tags || ['IA'], favorite:false, createdAt:Date.now()
+        };
+        pushIdea(idea);
+      }catch(e){
+        console.error(e);
+        toast('Erro ao falar com a IA (verifique /api/ideas e OPENAI_API_KEY)');
+      }
+    });
 
+    // modo rápido (continua local, só preenche rascunho)
     $('#quickGenerate').addEventListener('click', ()=>{
       const p = $('#quickPrompt').value.trim();
       if(!p) return toast('Escreva um pedido no Modo rápido');
-      // mock simples: extrai tema por heurística
       const tema = (p.match(/sobre ([^\.]*)/i)||[])[1] || 'Tema sugerido';
       $('#fTema').value = capitalize(tema);
       $('#fObjetivos').value = '• Compreender conceitos básicos.\n• Aplicar em uma atividade prática.\n• Comunicar resultados.';
       $('#fConteudos').value = 'Definições principais\nExemplos do cotidiano\nAtividade prática guiada\nChecklist de revisão';
       $('#fDuracao').value = 50;
       $('#fRecursos').value = 'quadro, projetor, celular (cronômetro), folhas A4';
-      toast('Plano rascunhado ✏️ (mock)');
-    })
+      toast('Plano rascunhado ✏️');
+    });
 
     function capitalize(s){ return s.charAt(0).toUpperCase()+s.slice(1) }
 
-    function pushIdea(idea){
-      state.ideas.push(idea);
-      persistIdeas();
-      renderIdeas();
-    }
-
+    function pushIdea(idea){ state.ideas.push(idea); persistIdeas(); renderIdeas(); }
     function persistIdeas(){ localStorage.setItem('ideas', JSON.stringify(state.ideas)) }
-
     function renderIdeas(){
-      const list = $('#ideasList');
-      list.innerHTML='';
+      const list = $('#ideasList'); list.innerHTML='';
       const sorted = [...state.ideas].sort((a,b)=> (b.favorite?-1:1) - (a.favorite?-1:1) || b.createdAt-a.createdAt);
       if(!sorted.length){ list.innerHTML = `<div class="hint">Nenhuma ideia ainda. Use “Gerar ideias” ou “Salvar no Banco”.</div>`; return; }
-      sorted.forEach((id, idx)=>{
+      sorted.forEach((id)=>{
         const el = document.createElement('div'); el.className='idea';
         el.innerHTML = `
           <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px">
@@ -503,17 +460,13 @@
           </div>`;
         const [favBtn,useBtn,delBtn] = el.querySelectorAll('button');
         favBtn.addEventListener('click', ()=>{ id.favorite=!id.favorite; persistIdeas(); renderIdeas(); })
-        useBtn.addEventListener('click', ()=>{
-          loadToEditor({
-            tema:id.titulo,
-            objetivos: id.corpo.match(/Objetivos?:\s*([\s\S]*?)\n(?:Atividades|Avaliação|Materiais)/i)?.[1]||'',
-            conteudos: id.corpo.match(/Atividades?:\s*([\s\S]*?)\n(?:Avaliação|Materiais)/i)?.[1]||'',
-            recursos: id.corpo.match(/Materiais?:\s*([\s\S]*)/i)?.[1]||''
-          })
-        })
-        delBtn.addEventListener('click', ()=>{
-          if(confirm('Excluir esta ideia?')){ state.ideas.splice(state.ideas.indexOf(id),1); persistIdeas(); renderIdeas(); }
-        })
+        useBtn.addEventListener('click', ()=>{ loadToEditor({
+          tema:id.titulo,
+          objetivos: id.corpo.match(/Objetivos?:\s*([\s\S]*?)\n(?:Atividades|Avaliação|Materiais)/i)?.[1]||'',
+          conteudos: id.corpo.match(/Atividades?:\s*([\s\S]*?)\n(?:Avaliação|Materiais)/i)?.[1]||'',
+          recursos: id.corpo.match(/Materiais?:\s*([\s\S]*)/i)?.[1]||''
+        })})
+        delBtn.addEventListener('click', ()=>{ if(confirm('Excluir esta ideia?')){ state.ideas.splice(state.ideas.indexOf(id),1); persistIdeas(); renderIdeas(); }})
         list.appendChild(el);
       })
     }
@@ -526,12 +479,12 @@
       const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([content],{type:'application/json'})); a.download=name; a.click(); URL.revokeObjectURL(a.href);
     }
 
-    // ————— Correção Objetiva —————
+    // Objetiva (permanece local)
     $('#exemploObj').addEventListener('click', ()=>{
       $('#gabarito').value='ABCDEABCDE';
       $('#alunosCSV').value = 'Ana, ABCDEABCDE\nBruno, ABCDDABCDC\nCarla, BBCDEABCDA\nDiego, ABCDEABCDD';
       toast('Exemplo carregado');
-    })
+    });
 
     function corrigeObjetiva(){
       const gab = $('#gabarito').value.trim().toUpperCase();
@@ -541,17 +494,14 @@
       const linhas = $('#alunosCSV').value.trim().split(/\n+/).filter(Boolean);
       const alunos = linhas.map(l=>{ const [nome, respRaw] = l.split(',').map(s=>s.trim()); return {nome, resp:(respRaw||'').toUpperCase()}; }).filter(a=>a.nome);
       if(!alunos.length){ toast('Adicione pelo menos um aluno'); return; }
-      const headers = ['Aluno'];
-      for(let i=0;i<gab.length;i++) headers.push('Q'+(i+1));
-      headers.push('Acertos','Nota');
+      const headers = ['Aluno']; for(let i=0;i<gab.length;i++) headers.push('Q'+(i+1)); headers.push('Acertos','Nota');
       const thead = $('#tObj thead'); thead.innerHTML = '<tr>'+headers.map(h=>`<th>${h}</th>`).join('')+'</tr>';
       const tbody = $('#tObj tbody'); tbody.innerHTML='';
       let acertosTurma = 0;
       alunos.forEach(al=>{
         let acertos=0; const tds=[`<td><strong>${escapeHTML(al.nome)}</strong></td>`];
         for(let i=0;i<gab.length;i++){
-          const ok = al.resp[i]===gab[i];
-          acertos += ok?1:0;
+          const ok = al.resp[i]===gab[i]; acertos += ok?1:0;
           tds.push(`<td class="${ok?'ok':'bad'}">${al.resp[i]||'-'}</td>`)
         }
         const nota = acertos*valor - (gab.length-acertos)*Math.max(0,pena);
@@ -560,7 +510,6 @@
         tds.push(`<td class='score'>${Math.max(0,nota).toFixed(2)}</td>`);
         tbody.insertAdjacentHTML('beforeend', `<tr>${tds.join('')}</tr>`);
       })
-      // resumo
       const mediaAcertos = acertosTurma/(alunos.length||1);
       const pct = (100*mediaAcertos/(gab.length||1))|0;
       $('#objResumo').innerHTML = `
@@ -570,82 +519,76 @@
           <div class="card"><div class="hint">Penalidade por erro</div><div style="font-size:22px;font-weight:800">${pena}</div></div>
         </div>`;
       toast('Corrigido ✅');
-      // guarda última
       window._lastObj = {headers, alunos, gabarito:gab, valor, penalidade:pena};
     }
-
     $('#corrigirObj').addEventListener('click', corrigeObjetiva);
-
     $('#exportObjCSV').addEventListener('click', ()=>{
       if(!window._lastObj){ toast('Nada para exportar'); return; }
       const {headers, alunos, gabarito, valor, penalidade} = window._lastObj;
       const lines = [headers.join(',')];
       alunos.forEach(al=>{
-        let row=[`"${al.nome.replaceAll('"','\"')}"`];
+        let row=[`"${al.nome.replaceAll('"','\\"')}"`];
         for(let i=0;i<gabarito.length;i++) row.push(al.resp[i]||'');
         const acertos = al.resp.split('').slice(0,gabarito.length).filter((c,i)=>c===gabarito[i]).length;
         const nota = acertos*valor - (gabarito.length-acertos)*Math.max(0,penalidade);
         row.push(acertos, Math.max(0,nota).toFixed(2));
         lines.push(row.join(','));
       })
-      const csv = lines.join('\n');
-      download('resultado_objetiva.csv', csv);
-      toast('CSV gerado');
+      const csv = lines.join('\n'); download('resultado_objetiva.csv', csv); toast('CSV gerado');
     })
 
-    // ————— Correção Dissertativa —————
+    // ===== IA REAL: correção dissertativa com API =====
     $('#exemploDisc').addEventListener('click', ()=>{
       $('#qDisc').value = 'Explique o processo de fotossíntese e sua importância para os seres vivos.';
       $('#kDisc').value = 'luz, clorofila, dióxido de carbono, CO2, glicose, oxigênio, água, energia química';
       $('#discAlunos').value = 'Ana: A planta usa luz e CO2 com água para produzir glicose e soltar oxigênio.\nBruno: A fotossíntese precisa de clorofila e luz; transforma energia solar em energia química.';
       toast('Exemplo carregado');
-    })
+    });
 
-    function corrigeDissertativa(){
-      const kraw = $('#kDisc').value.toLowerCase();
-      const keys = kraw.split(',').map(s=>s.trim()).filter(Boolean);
-      const max = parseFloat($('#maxDisc').value||'10');
+    $('#corrigirDisc').addEventListener('click', async ()=>{
+      const criterios = $('#kDisc').value.split(',').map(s=>s.trim()).filter(Boolean);
+      const max = +($('#maxDisc').value||10);
       const lines = $('#discAlunos').value.split(/\n+/).filter(Boolean);
-      if(!keys.length || !lines.length){ toast('Preencha critérios e respostas'); return; }
-      const thead = $('#tDisc thead'); thead.innerHTML = '<tr><th>Aluno</th><th>Ocorrências</th><th>Nota</th><th>Feedback</th></tr>';
-      const tbody = $('#tDisc tbody'); tbody.innerHTML='';
-      let soma=0;
-      const rows=[];
-      lines.forEach(l=>{
+      if(!criterios.length || !lines.length){ toast('Preencha critérios e respostas'); return; }
+
+      const respostas = lines.map(l=>{
         const [nome, ...rest] = l.split(':');
-        const texto = (rest.join(':')||'').trim();
-        const low = texto.toLowerCase();
-        let hits=0; const missing=[];
-        keys.forEach(k=>{ if(low.includes(k)) hits++; else missing.push(k) })
-        const nota = Math.max(0, Math.min(max, (hits/keys.length)*max));
-        soma += nota;
-        const fb = `${$('#fbPrefix').value}${missing.length? ' Faltou mencionar: '+missing.slice(0,3).join(', ') + (missing.length>3?'…':'') : ' Excelente cobertura dos critérios.'}${$('#fbSuffix').value}`;
-        rows.push({nome:nome?.trim()||'—', hits, nota: +nota.toFixed(2), fb});
-        tbody.insertAdjacentHTML('beforeend', `<tr><td><strong>${escapeHTML(nome||'—')}</strong></td><td>${hits}/${keys.length}</td><td class='score'>${nota.toFixed(2)}</td><td>${escapeHTML(fb)}</td></tr>`)
-      })
-      const media = soma/(rows.length||1);
-      $('#discResumo').innerHTML = `
-        <div class="grid-3">
-          <div class="card"><div class="hint">Média da turma</div><div style="font-size:22px;font-weight:800">${media.toFixed(2)} / ${max}</div><div class="progress" style="margin-top:8px"><i style="width:${(100*media/max)|0}%"></i></div></div>
-          <div class="card"><div class="hint">Critérios avaliados</div><div style="font-size:22px;font-weight:800">${keys.length}</div></div>
-          <div class="card"><div class="hint">Alunos corrigidos</div><div style="font-size:22px;font-weight:800">${rows.length}</div></div>
-        </div>`;
-      toast('Corrigido ✅');
-      window._lastDisc = {rows, max, keys};
-    }
+        return { nome:(nome||'—').trim(), resposta:(rest.join(':')||'').trim() };
+      });
 
-    $('#corrigirDisc').addEventListener('click', corrigeDissertativa);
+      try{
+        const r = await fetch('/api/grade-disc', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ pergunta: $('#qDisc').value, criterios, max, respostas })
+        });
+        if(!r.ok) throw new Error('Falha na rota /api/grade-disc');
+        const rows = await r.json(); // [{nome,hits,nota,feedback}]
 
-    $('#exportDiscCSV').addEventListener('click', ()=>{
-      if(!window._lastDisc){ toast('Nada para exportar'); return; }
-      const {rows, max, keys} = window._lastDisc;
-      const lines = [ ['Aluno','Ocorrências','Nota','Max','ChavesUsadas'].join(',') ];
-      rows.forEach(r=> lines.push([`"${r.nome.replaceAll('"','\"')}"`, `${r.hits}/${keys.length}`, r.nota, max, `"${keys.join(' | ').replaceAll('"','\"')}"`].join(',')) );
-      download('resultado_dissertativa.csv', lines.join('\n'));
-      toast('CSV gerado');
-    })
+        const thead = $('#tDisc thead'); thead.innerHTML = '<tr><th>Aluno</th><th>Ocorrências</th><th>Nota</th><th>Feedback</th></tr>';
+        const tbody = $('#tDisc tbody'); tbody.innerHTML='';
+        let soma=0;
+        rows.forEach(rw=>{
+          soma += +rw.nota;
+          tbody.insertAdjacentHTML('beforeend',
+            `<tr><td><strong>${rw.nome}</strong></td><td>${rw.hits}/${criterios.length}</td><td class="score">${Number(rw.nota).toFixed(2)}</td><td>${escapeHTML(rw.feedback||'')}</td></tr>`);
+        });
+        const media = rows.length ? (soma/rows.length) : 0;
+        $('#discResumo').innerHTML = `
+          <div class="grid-3">
+            <div class="card"><div class="hint">Média da turma</div><div style="font-size:22px;font-weight:800">${media.toFixed(2)} / ${max}</div></div>
+            <div class="card"><div class="hint">Critérios avaliados</div><div style="font-size:22px;font-weight:800">${criterios.length}</div></div>
+            <div class="card"><div class="hint">Alunos corrigidos</div><div style="font-size:22px;font-weight:800">${rows.length}</div></div>
+          </div>`;
+        toast('Corrigido pela IA ✅');
+        window._lastDisc = {rows, max, criterios};
+      }catch(e){
+        console.error(e);
+        toast('Erro ao falar com a IA (verifique /api/grade-disc e OPENAI_API_KEY)');
+      }
+    });
 
-    // ————— Correção mode toggle —————
+    // mode toggle
     $$('[data-cmode]').forEach(btn=>{
       btn.addEventListener('click', ()=>{
         $$('[data-cmode]').forEach(b=>b.classList.remove('active'));
@@ -656,9 +599,8 @@
       })
     })
 
-    // ————— init —————
+    // init
     renderWeek();
-
   </script>
 </body>
 </html>
